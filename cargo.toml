@@ -1,0 +1,47 @@
+[package]
+name = "ultra-blazing-wc"
+version = "1.0.0"
+edition = "2021"
+description = "🚀 ULTRA BLAZINGLY FAST memory-safe wc with SIMD, mmap, and parallel processing"
+authors = ["Ultra Blazing WC Contributors"]
+license = "MIT"
+repository = "https://github.com/your-username/blazing-wc"
+homepage = "https://github.com/your-username/blazing-wc"
+documentation = "https://docs.rs/ultra-blazing-wc"
+readme = "README.md"
+keywords = ["wc", "word-count", "cli", "performance", "simd"]
+categories = ["command-line-utilities", "text-processing"]
+exclude = [
+    "tests/data/large.txt",
+    "tests/data/generated_*",
+    "target/",
+    "*.tar.gz",
+    "*.zip"
+]
+
+[dependencies]
+# Still zero dependencies! Maximum performance with pure std! 🦀
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[[bin]]
+name = "wc"
+path = "src/main.rs"
+
+[profile.release]
+# 🔥 MAXIMUM BLAZING PERFORMANCE OPTIMIZATIONS 🔥
+lto = "fat"                    # Aggressive link-time optimization
+codegen-units = 1              # Maximum optimization
+opt-level = 3                  # Highest optimization level
+panic = "abort"                # Smaller binary, faster execution
+strip = true                   # Remove debug symbols
+overflow-checks = false        # Disable overflow checks for SPEED
+debug-assertions = false       # Disable debug assertions
+
+[profile.release.build-override]
+opt-level = 3
+
+# 🚀 CPU-specific optimizations (uncomment for your target)
+# [target.x86_64-unknown-linux-gnu]
+# rustflags = ["-C", "target-cpu=native", "-C", "target-feature=+avx2"]

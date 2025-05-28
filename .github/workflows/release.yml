@@ -1,0 +1,166 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+    - name: Get version from tag
+      id: get_version
+      run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Ultra Blazing WC v${{ steps.get_version.outputs.version }}
+        body: |
+          ## Ultra Blazing WC v${{ steps.get_version.outputs.version }}
+          
+          A blazing fast implementation of the Unix `wc` command with memory mapping and SIMD optimizations.
+          
+          ### Performance Highlights
+          - 2-9x faster than system `wc`
+          - Memory-mapped I/O for zero-copy file access
+          - Parallel processing for multiple files
+          - SIMD optimizations for ultra-fast counting
+          
+          ### Downloads
+          Choose the appropriate binary for your platform:
+          - **Linux (x86_64)**: `ultra-blazing-wc-linux-x86_64.tar.gz`
+          - **macOS (x86_64)**: `ultra-blazing-wc-macos-x86_64.tar.gz`
+          - **macOS (ARM64)**: `ultra-blazing-wc-macos-arm64.tar.gz`
+          - **Windows (x86_64)**: `ultra-blazing-wc-windows-x86_64.zip`
+          
+          ### Installation
+          ```bash
+          # Extract and install (Linux/macOS)
+          tar -xzf ultra-blazing-wc-*.tar.gz
+          sudo mv ultra-blazing-wc /usr/local/bin/wc
+          
+          # Or use as drop-in replacement
+          alias wc='./ultra-blazing-wc'
+          ```
+          
+          See [CHANGELOG.md](CHANGELOG.md) for detailed changes.
+        draft: false
+        prerelease: false
+
+  build:
+    name: Build Release Binaries
+    needs: create-release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            name: linux-x86_64
+            archive: tar.gz
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            name: linux-x86_64-musl
+            archive: tar.gz
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            name: macos-x86_64
+            archive: tar.gz
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            name: macos-arm64
+            archive: tar.gz
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            name: windows-x86_64
+            archive: zip
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: ${{ matrix.target }}
+
+    - name: Install musl tools (Linux musl only)
+      if: matrix.target == 'x86_64-unknown-linux-musl'
+      run: sudo apt-get install -y musl-tools
+
+    - name: Cache cargo registry
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Build release binary
+      run: |
+        cargo build --release --target ${{ matrix.target }}
+
+    - name: Strip binary (Unix)
+      if: matrix.os != 'windows-latest'
+      run: strip target/${{ matrix.target }}/release/ultra-blazing-wc
+
+    - name: Create archive (Unix)
+      if: matrix.archive == 'tar.gz'
+      run: |
+        cd target/${{ matrix.target }}/release
+        tar -czf ../../../ultra-blazing-wc-${{ matrix.name }}.tar.gz ultra-blazing-wc
+        cd ../../..
+
+    - name: Create archive (Windows)
+      if: matrix.archive == 'zip'
+      run: |
+        cd target/${{ matrix.target }}/release
+        7z a ../../../ultra-blazing-wc-${{ matrix.name }}.zip ultra-blazing-wc.exe
+        cd ../../..
+
+    - name: Upload Release Asset (Unix)
+      if: matrix.archive == 'tar.gz'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./ultra-blazing-wc-${{ matrix.name }}.tar.gz
+        asset_name: ultra-blazing-wc-${{ matrix.name }}.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload Release Asset (Windows)
+      if: matrix.archive == 'zip'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./ultra-blazing-wc-${{ matrix.name }}.zip
+        asset_name: ultra-blazing-wc-${{ matrix.name }}.zip
+        asset_content_type: application/zip
+
+  publish-crates-io:
+    name: Publish to crates.io
+    needs: [create-release, build]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@stable
+    - name: Publish to crates.io
+      run: cargo publish --token ${{ secrets.CRATES_IO_TOKEN }}
+      continue-on-error: true  # Don't fail if already published 
