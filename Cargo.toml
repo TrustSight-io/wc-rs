@@ -1,6 +1,6 @@
 [package]
 name = "ultra-blazing-wc"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2021"
 description = "🚀 ULTRA BLAZINGLY FAST memory-safe wc with SIMD, mmap, and parallel processing"
 authors = ["Ultra Blazing WC Contributors"]
