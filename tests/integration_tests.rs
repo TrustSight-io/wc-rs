@@ -28,12 +28,16 @@ fn run_system_wc(args: &[&str]) -> (String, String, i32) {
 }
 
 fn extract_counts(output: &str) -> (usize, usize, usize) {
-    let line = output.lines().next().unwrap();
+    let line = output.lines().next().expect(&format!("No output lines found. Output was: '{}'", output));
     let parts: Vec<&str> = line.split_whitespace().collect();
 
-    let lines = parts[0].parse().unwrap();
-    let words = parts[1].parse().unwrap();
-    let chars = parts[2].parse().unwrap();
+    if parts.len() < 3 {
+        panic!("Expected at least 3 parts in output, got {}: '{}'", parts.len(), line);
+    }
+
+    let lines = parts[0].parse().expect(&format!("Failed to parse lines from '{}'", parts[0]));
+    let words = parts[1].parse().expect(&format!("Failed to parse words from '{}'", parts[1]));
+    let chars = parts[2].parse().expect(&format!("Failed to parse chars from '{}'", parts[2]));
 
     (lines, words, chars)
 }
@@ -92,6 +96,11 @@ fn test_small_file() {
 
 #[test]
 fn test_large_file() {
+    // Check if large.txt exists
+    if !std::path::Path::new("tests/data/large.txt").exists() {
+        panic!("tests/data/large.txt does not exist. Run tests/data/generate_large.sh first.");
+    }
+    
     let (our_output, _, _) = run_wc(&["tests/data/large.txt"]);
     let (sys_output, _, _) = run_system_wc(&["tests/data/large.txt"]);
 
@@ -246,6 +255,11 @@ fn test_stdin_processing() {
 #[test]
 fn test_performance_large_file() {
     use std::time::Instant;
+
+    // Check if large.txt exists
+    if !std::path::Path::new("tests/data/large.txt").exists() {
+        panic!("tests/data/large.txt does not exist. Run tests/data/generate_large.sh first.");
+    }
 
     // Warm up
     let _ = run_wc(&["tests/data/large.txt"]);
