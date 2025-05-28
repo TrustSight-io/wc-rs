@@ -183,7 +183,7 @@ $ time wc text_test.txt
 0.12s user 0.01s system 98% cpu 0.126 total
 
 $ time ./target/release/wc text_test.txt
-0.02s user 0.01s system 11% cpu 0.228 total  
+0.02s user 0.01s system 11% cpu 0.028 total  
 # 🚀 6x faster!
 ```
 
@@ -253,11 +253,9 @@ Contributions are welcome! Areas for improvement:
 
 ## 📄 **License**
 
-Licensed under either of:
-- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
+Licensed under:
 - MIT License ([LICENSE-MIT](LICENSE-MIT))
 
-at your option.
 
 ## 🙏 **Acknowledgments**
 
@@ -270,7 +268,7 @@ at your option.
 **Ready to experience blazing speed? 🦀💨**
 
 ```bash
-git clone https://github.com/yourusername/blazing-wc.git
+git clone https://github.com/TrustSight-io/wc-rs.git
 cd blazing-wc
 RUSTFLAGS="-C target-cpu=native" cargo build --release
 time ./target/release/wc your_large_file.txt
