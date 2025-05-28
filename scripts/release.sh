@@ -215,8 +215,8 @@ echo "2. 📦 Binaries will be attached to the GitHub release"
 echo "3. 📚 The package will be published to crates.io (if configured)"
 echo "4. 🔍 Monitor the GitHub Actions workflow for any issues"
 echo ""
-log_info "GitHub Release URL: https://github.com/your-username/blazing-wc/releases/tag/v$VERSION"
-log_info "GitHub Actions: https://github.com/your-username/blazing-wc/actions"
+log_info "GitHub Release URL: https://github.com/TrustSight-io/wc-rs/releases/tag/v$VERSION"
+log_info "GitHub Actions: https://github.com/TrustSight-io/wc-rs/actions"
 
 if [[ "$DRY_RUN" == true ]]; then
     echo ""
