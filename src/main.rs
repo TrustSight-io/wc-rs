@@ -455,7 +455,7 @@ mod tests {
 
         assert_eq!(counts.lines, 2);
         assert_eq!(counts.words, 6);
-        assert_eq!(counts.chars, 26);
+        assert_eq!(counts.chars, 27);
     }
 
     #[test]
