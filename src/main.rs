@@ -61,7 +61,7 @@ impl Config {
                         'l' => config.show_lines = true,
                         'w' => config.show_words = true,
                         'c' => config.show_chars = true,
-                        _ => return Err(format!("Unknown flag: -{}", ch)),
+                        _ => return Err(format!("Unknown flag: -{ch}")),
                     }
                 }
             } else {
@@ -369,7 +369,7 @@ fn main() {
     let config = match Config::from_args() {
         Ok(config) => config,
         Err(e) => {
-            eprintln!("Error: {}", e);
+            eprintln!("Error: {e}");
             eprintln!("Usage: wc [-l] [-w] [-c] [file ...]");
             std::process::exit(1);
         }
@@ -381,7 +381,7 @@ fn main() {
                 println!("{}", format_output(&counts, &config, None));
             }
             Err(e) => {
-                eprintln!("Error reading stdin: {}", e);
+                eprintln!("Error reading stdin: {e}");
                 std::process::exit(1);
             }
         }
@@ -392,7 +392,7 @@ fn main() {
                 println!("{}", format_output(&counts, &config, Some(file_path)));
             }
             Err(e) => {
-                eprintln!("wc: {}: {}", file_path, e);
+                eprintln!("wc: {file_path}: {e}");
                 std::process::exit(1);
             }
         }
@@ -408,7 +408,7 @@ fn main() {
                     total_counts.add(&counts);
                 }
                 Err(e) => {
-                    eprintln!("wc: {}: {}", file_path, e);
+                    eprintln!("wc: {file_path}: {e}");
                     std::process::exit(1);
                 }
             }

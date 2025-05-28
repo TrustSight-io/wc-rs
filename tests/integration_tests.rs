@@ -267,8 +267,8 @@ fn test_performance_large_file() {
     assert_eq!(our_counts, sys_counts);
 
     // Print performance comparison
-    println!("Our implementation: {:?}", our_time);
-    println!("System wc: {:?}", sys_time);
+    println!("Our implementation: {our_time:?}");
+    println!("System wc: {sys_time:?}");
     println!(
         "Speedup: {:.2}x",
         sys_time.as_secs_f64() / our_time.as_secs_f64()

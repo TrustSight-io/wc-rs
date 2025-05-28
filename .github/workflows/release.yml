@@ -142,19 +142,24 @@ jobs:
         7z a ../../../ultra-blazing-wc-${{ matrix.name }}.zip wc.exe
         cd ../../..
 
-    - name: Upload Release Asset
+    - name: Upload Release Asset (Unix)
+      if: matrix.archive == 'tar.gz'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        if [ "${{ matrix.archive }}" = "tar.gz" ]; then
-          gh release upload "${{ github.ref_name }}" \
-            "./ultra-blazing-wc-${{ matrix.name }}.tar.gz" \
-            --clobber
-        else
-          gh release upload "${{ github.ref_name }}" \
-            "./ultra-blazing-wc-${{ matrix.name }}.zip" \
-            --clobber
-        fi
+        gh release upload "${{ github.ref_name }}" \
+          "./ultra-blazing-wc-${{ matrix.name }}.tar.gz" \
+          --clobber
+
+    - name: Upload Release Asset (Windows)
+      if: matrix.archive == 'zip'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      shell: pwsh
+      run: |
+        gh release upload "${{ github.ref_name }}" `
+          "./ultra-blazing-wc-${{ matrix.name }}.zip" `
+          --clobber
 
   # publish-crates-io:
   #   name: Publish to crates.io
