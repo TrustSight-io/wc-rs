@@ -139,6 +139,11 @@ else
     log_info "Would update CHANGELOG.md with release date $CURRENT_DATE"
 fi
 
+# Build release binary first (needed for integration tests)
+log_info "🔨 Building release binary"
+RUSTFLAGS="-C target-cpu=native" cargo build --release
+log_success "Release binary built successfully"
+
 # Run tests
 if [[ "$SKIP_TESTS" == false ]]; then
     log_info "🧪 Running test suite"
@@ -179,11 +184,6 @@ if [[ "$SKIP_TESTS" == false ]]; then
 else
     log_warning "Skipping tests as requested"
 fi
-
-# Build release binary
-log_info "🔨 Building release binary"
-RUSTFLAGS="-C target-cpu=native" cargo build --release
-log_success "Release binary built successfully"
 
 # Commit changes
 if [[ "$DRY_RUN" == false ]]; then
