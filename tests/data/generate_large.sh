@@ -34,9 +34,9 @@ echo "Generating large test file with real words..."
     done
 } > /tmp/chunk.txt
 
-# Now replicate this chunk many times to reach ~8MB
+# Now replicate this chunk many times to reach ~8MB with >10k lines
 {
-    for j in {1..75}; do
+    for j in {1..100}; do
         cat /tmp/chunk.txt
         echo "Section $j: Performance benchmarking and optimization techniques."
         echo "Data processing pipeline stage $j with error handling mechanisms."

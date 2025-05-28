@@ -355,7 +355,7 @@ fn format_output(counts: &WcCounts, config: &Config, filename: Option<&str>) -> 
         parts.push(format!("{:8}", counts.chars));
     }
 
-    let mut output = parts.join("");
+    let mut output = parts.join(" ");
 
     if let Some(name) = filename {
         output.push(' ');
