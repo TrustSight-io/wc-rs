@@ -53,6 +53,9 @@ jobs:
     - name: Build
       run: cargo build --verbose
 
+    - name: Build release (needed for integration tests)
+      run: cargo build --release
+
     - name: Run tests
       run: cargo test --verbose
 
@@ -92,6 +95,8 @@ jobs:
     - uses: dtolnay/rust-toolchain@stable
     - name: Install tarpaulin
       run: cargo install cargo-tarpaulin
+    - name: Build release (needed for integration tests)
+      run: cargo build --release
     - name: Generate test data
       run: |
         cd tests/data
