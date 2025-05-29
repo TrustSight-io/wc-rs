@@ -51,7 +51,8 @@ fn test_empty_file() {
     let sys_counts = extract_counts(&sys_output);
 
     assert_eq!(our_counts, sys_counts);
-    assert_eq!(our_counts, (0, 0, 1)); // Empty file has 1 byte (newline)
+    // The file contains a single space character
+    assert_eq!(our_counts, (0, 0, 1));
 }
 
 #[test]
