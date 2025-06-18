@@ -51,7 +51,12 @@ fn test_empty_file() {
     let sys_counts = extract_counts(&sys_output);
 
     assert_eq!(our_counts, sys_counts);
-    assert_eq!(our_counts, (0, 0, 1)); // Empty file has 1 byte (newline)
+
+    // Determine expected byte count dynamically in case the test file changes
+    let expected_size = std::fs::read("tests/data/empty.txt")
+        .expect("failed to read empty.txt")
+        .len();
+    assert_eq!(our_counts, (0, 0, expected_size));
 }
 
 #[test]
